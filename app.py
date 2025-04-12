@@ -70,6 +70,14 @@ def delete_note(note_id):
     conn.close()
     return redirect(url_for('index'))
 
+@app.route('/init-db')
+def init_db_route():
+    try:
+        init_db()
+        return "✅ Database initialized!"
+    except Exception as e:
+        return f"❌ Failed to init DB: {e}"
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
