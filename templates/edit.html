@@ -10,6 +10,24 @@
       darkMode: 'class',
     }
   </script>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || 
+       (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen">
   <div class="max-w-2xl mx-auto py-10 px-4">
@@ -27,6 +45,17 @@
         <a href="/" class="text-gray-500 hover:underline">← Quay lại</a>
       </div>
     </form>
+    <hr class="my-10 border-gray-300 dark:border-gray-700">
+    <div class="flex justify-end mb-4">
+      <button onclick="toggleTheme()" class="text-sm bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
+        🌓 Đổi giao diện
+      </button>
+    </div>
+    <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+      <p class="mb-2">☕ Nếu bạn thấy ứng dụng hữu ích, hãy ủng hộ mình một ly cà phê nhé!</p>
+      <img src="{{ url_for('static', filename='qr_momo.png') }}" alt="Ủng hộ Momo" class="mx-auto w-48 border rounded shadow" />
+      <p class="mt-2 italic">Cảm ơn bạn rất nhiều 🙏</p>
+    </div>
   </div>
 </body>
 </html>

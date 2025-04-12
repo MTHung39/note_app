@@ -1,7 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+import psycopg2
+import os
 
 app = Flask(__name__)
+
+# Lấy URL kết nối PostgreSQL từ biến môi trường
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL)
 
 def init_db():
     conn = sqlite3.connect('notes.db')
@@ -12,12 +20,18 @@ def init_db():
 
 @app.route('/')
 def index():
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM notes')
-    notes = c.fetchall()
+    search = request.args.get('q', '')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    if search:
+        cur.execute("SELECT * FROM notes WHERE title ILIKE %s OR content ILIKE %s ORDER BY id DESC",
+                    (f'%{search}%', f'%{search}%'))
+    else:
+        cur.execute('SELECT * FROM notes ORDER BY id DESC')
+    notes = cur.fetchall()
+    cur.close()
     conn.close()
-    return render_template('index.html', notes=notes)
+    return render_template('index.html', notes=notes, search=search)
 
 @app.route('/add', methods=['POST'])
 def add_note():
