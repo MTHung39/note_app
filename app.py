@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Lấy URL kết nối PostgreSQL từ biến môi trường
-DATABASE_URL = "postgresql://postgres:Hung0309!@localhost:5432/MTH_db"
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
