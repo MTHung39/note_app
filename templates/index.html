@@ -72,9 +72,13 @@
       </button>
     </div>
     <div class="text-center text-sm text-gray-500 dark:text-gray-400">
-      <p class="mb-2">☕ Nếu bạn thấy ứng dụng hữu ích, hãy ủng hộ mình một ly cà phê nhé!</p>
-      <img src="{{ url_for('static', filename='qr_momo.png') }}" alt="Ủng hộ Momo" class="mx-auto w-48 border rounded shadow" />
-      <p class="mt-2 italic">Cảm ơn bạn rất nhiều 🙏</p>
+      <ul>
+        <li><p class="mb-2">☕ Nếu bạn thấy ứng dụng hữu ích, hãy ủng hộ mình một ly cà phê nhé!</p></li>
+        <li>
+          <img src="{{ url_for('static', filename='qr_momo.png') }}" alt="Ủng hộ Momo" class="mx-auto w-48 border rounded shadow" />
+          <p class="mt-2 italic">Cảm ơn bạn rất nhiều 🙏</p>
+        </li>
+      </ul>
     </div>
   </div>
 </body>
