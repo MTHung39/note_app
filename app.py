@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
 import psycopg2
 import os
 
@@ -12,10 +11,17 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 def init_db():
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY, title TEXT, content TEXT)''')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS notes (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL
+        )
+    ''')
     conn.commit()
+    cur.close()
     conn.close()
 
 @app.route('/')
@@ -37,36 +43,40 @@ def index():
 def add_note():
     title = request.form['title']
     content = request.form['content']
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
-    c.execute('INSERT INTO notes (title, content) VALUES (?, ?)', (title, content))
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('INSERT INTO notes (title, content) VALUES (%s, %s)', (title, content))
     conn.commit()
+    cur.close()
     conn.close()
     return redirect(url_for('index'))
 
 @app.route('/edit/<int:note_id>', methods=['GET', 'POST'])
 def edit_note(note_id):
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
+    conn = get_db_connection()
+    cur = conn.cursor()
     if request.method == 'POST':
         new_title = request.form['title']
         new_content = request.form['content']
-        c.execute('UPDATE notes SET title = ?, content = ? WHERE id = ?', (new_title, new_content, note_id))
+        cur.execute('UPDATE notes SET title = %s, content = %s WHERE id = %s', (new_title, new_content, note_id))
         conn.commit()
+        cur.close()
         conn.close()
         return redirect(url_for('index'))
     else:
-        c.execute('SELECT * FROM notes WHERE id = ?', (note_id,))
-        note = c.fetchone()
+        cur.execute('SELECT * FROM notes WHERE id = %s', (note_id,))
+        note = cur.fetchone()
+        cur.close()
         conn.close()
         return render_template('edit.html', note=note)
 
 @app.route('/delete/<int:note_id>')
 def delete_note(note_id):
-    conn = sqlite3.connect('notes.db')
-    c = conn.cursor()
-    c.execute('DELETE FROM notes WHERE id = ?', (note_id,))
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('DELETE FROM notes WHERE id = %s', (note_id,))
     conn.commit()
+    cur.close()
     conn.close()
     return redirect(url_for('index'))
 
